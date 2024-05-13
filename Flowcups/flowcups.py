@@ -2,7 +2,7 @@
 """ These equations convert cup drain time, collected at 25 °C and between the minimum and maximum drain times indicated, into kinematic viscosity values in mm²/s (cSt).
     Based on the data provided in the following standards, ASTM D4212, ASTM D1200, DIN 53211 and ISO 2341.
 
-    Copyright © 2024-05 Jack Stringer <snakes@jackstringer.co.uk>, https://github.com/mendip-defender/"""
+    Copyright © 2024-05 Jack Stringer https://github.com/mendip-defender/"""
 
 import numpy as np
 
@@ -176,13 +176,33 @@ def ISO_Cup(cup,t):
     
     return A * t - (B / t)
 
-def Ref_Oil(designation,oil_temp,V_TempL,TempL,V_TempH,Temp_H):
-    """Corrects the mm²/s (cSt) for the Reference Oil used for calibration based upon information supplied by the manufacturer Paragon Scientific Ltd.
+def Ref_Oil(designation,oil_temp,V_TempL,TempL,V_TempH,TempH):
+    """Corrects the mm²/s (cSt) for the Reference Oil used for calibration at a given temperature based upon information supplied on the calibration certificate.
+    State the Reference Oil used followed by the measured temperature, then Viscosity at Lower Temperature, Lower Temperature followed
+    by Viscosity at Higher Temperature, Higher Temperature. If you are unsure then the defaults will be used.
+    Currently supported Oils are C10 and C100.
+    For example: C10 oil measured at 21.3 °C, Viscosity at Lower Temperature 20.72 mm²/s (cSt), Lower Temperature of 20 °C,
+    Viscosity at Higher Temperatures 16.92 mm²/s (cSt), Higher Temperatures 25 °C
+    Ref_Oil('C10',23,20.72,20,16.92,25)
+    This should give you a reading of 18.44 mm²/s (cSt)    
     """
-    if designation == C10:
-        if V_TempL <= 0 or TempL <= 0 or V_TempH <= 0 or Temp_H <= 0:
+    if designation in ['C10','c10','C 10','c 10']:
+        if V_TempL <= 0 or TempL <= 0 or V_TempH <= 0 or TempH <= 0:
             V_TempL = 20.72
             TempL = 20
             V_TempH = 16.92
-            Temp_H = 25
-    coeffs = np.polynomial.polynomial.polyfit([V_TempL,V_TempH],[TempL,TempH],2)
+            TempH = 25
+    elif designation in ['C100','c100','C 100','c 100']:
+        if V_TempL <= 0 or TempL <= 0 or V_TempH <= 0 or TempH <= 0:
+            V_TempL = 329.0
+            TempL = 20
+            V_TempH = 237.4
+            TempH = 25
+    return np.interp(oil_temp,[TempL,TempH],[V_TempL,V_TempH])
+
+def Percentage_Error(Ref_Vis,Cup_Vis):
+    """The maths required to calculate the percentage error between the Reference Viscosity and Measured Visocsity of the Cup. 
+    The difference between the certified viscosity and the determined viscosity, multiplied by 100 and divided by the certified viscosity, will give the
+    percentage variation of the cup from the standard.
+    """
+    return ((Ref_Vis - Cup_Vis) * 100) / Ref_Vis
