@@ -1,8 +1,8 @@
 # Conversion / Calculators
 A collection of calculators and conversions taking the formula and providing an example of how it works. Most will be Jupyter Notebooks as they allow for the formula to be written in Markdown/Latex and a description of how to solve the conversation.
 
-[!WARNING]  
-I am no expert so please double check the maths before you use this for anything mission critical etc.
+>[!WARNING]  
+>I am no expert so please double check the maths before you use this for anything mission critical etc.
 
 ## Currently available
 - Flow Cups, equations convert cup drain time for paint flow cups using calibration oils.
