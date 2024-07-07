@@ -116,7 +116,7 @@ def ohm_to_temp(ohm,n):
         A = 3.9083 * 10**-3
         B = -5.775 * 10**-7
         C = 0 * 10**-12
-        if Rt > 100 and Rt < 138.5055: # 0 °C to 100 °C
+        if Rt >= 100 and Rt < 138.5055: # 0 °C to 100 °C
             t = -1
             Rt0 = 99
             while Rt > Rt0:
